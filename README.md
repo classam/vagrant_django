@@ -1,2 +1,15 @@
-# vagrant_django
-A scaffolding generator to toss together a complete Django site, including Vagrant, Postgres, Redis, UWSGI, and NGINX
+
+Install
+-------
+
+1. Install VirtualBox
+
+2. Install Vagrant
+
+3. Command Line
+
+    $> vagrant up
+    $> cd threepanel
+    $> sudo python3 configuration/install.py
+    $> dj migrate
+
