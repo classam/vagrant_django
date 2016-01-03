@@ -60,7 +60,7 @@ If you want to run it on your own computer, do the following:
 
     $> dj migrate
 
-    $> in runserver
+    $> in dev_start
 
 Production
 ==========

@@ -35,6 +35,11 @@ def runserver():
     print("Running server on localhost:8080 (Vagrant Host:18080)")
     return dj("runserver 0:8080", pty=True)
 
+@task()
+def dev_start():
+    """ Run a django development server """
+    return runserver()
+
 @task
 def migrate():
     """ Prep the database """
