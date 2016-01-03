@@ -16,9 +16,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 ADMINS = ( ("${admin_name}", "${admin_email}"), )
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '${secret_key}'
 
@@ -33,26 +30,6 @@ else:
 TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = ['.${domain}']
-
-# AUTH STUFF
-LOGIN_URL = "/dashboard/login"
-
-# TZ
-TIME_ZONE = 'America/Vancouver'
-USE_TZ = True
-
-CELERYBEAT_SCHEDULE = {
-    'publish':{
-        'task':'comics.tasks.publish',
-        'schedule': timedelta(minutes=10),
-    },
-    'tidy-subscribers':{
-        'task':'publish.tasks.tidy_subscribers',
-        'schedule': timedelta(days=1),
-    }
-}
-CELERY_IGNORE_RESULT = True
-CELERY_DISABLE_RATE_LIMITS = True
 
 if DEBUG:
     # When we're in debug mode, we don't want any caching to occur
@@ -77,42 +54,9 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
+ROOT_URLCONF = '${project_slug}.urls'
 
-# Application definition
-
-INSTALLED_APPS = (
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'djrill',
-    'datetimewidget',
-    'bootstrap3',
-    'djorm_fulltext',
-
-    'dashboard',
-    'comics',
-    'publish',
-    'pages'
-)
-
-MIDDLEWARE_CLASSES = (
-    'django.middleware.cache.UpdateCacheMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',
-)
-
-ROOT_URLCONF = 'threepanel.urls'
-
-WSGI_APPLICATION = 'threepanel.wsgi.application'
-
+WSGI_APPLICATION = '${project_slug}.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
@@ -120,8 +64,8 @@ WSGI_APPLICATION = 'threepanel.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'threepanel',
-        'USER': 'threepanel',
+        'NAME': '${project_slug}',
+        'USER': '${project_slug}',
         'PASSWORD': '${db_password}',
         'HOST': 'localhost',
     }
@@ -154,3 +98,9 @@ USE_L10N = False
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+
+try:
+    from ${project_slug}.local_settings import *
+    print ("Loaded local settings")
+except ImportError:
+    print ("No available local settings")

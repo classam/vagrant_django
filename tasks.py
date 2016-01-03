@@ -1,13 +1,10 @@
-# this tasks file generated with vagrant_django
-# requires 'project_slug' be defined
-
 import os
 
 from invoke import task, run
 from invoke.exceptions import Failure
 
 HOME_PATH = os.environ['HOME']
-DJANGO_PATH = os.path.join(HOME_PATH, 'vagrant_django', '${project_slug}')
+DJANGO_PATH = os.path.join(HOME_PATH, 'vagrant_django', 'root')
 CONF_PATH = os.path.join(HOME_PATH, 'vagrant_django', 'configuration')
 UWSGI_LOG_PATH = os.path.join(HOME_PATH, 'logs', 'uwsgi.log')
 UWSGI_SH_PATH = os.path.join(HOME_PATH, 'uwsgi.sh')
@@ -18,7 +15,7 @@ def multiple(*args):
 
 @task
 def home(command, *args, **kwargs):
-    """ Run a command from the base ${project_slug} directory """
+    """ Run a command from the base django directory """
     return run(multiple("cd {}".format(DJANGO_PATH), command), *args, **kwargs)
 
 @task
@@ -43,28 +40,22 @@ def migrate():
     """ Prep the database """
     return dj("migrate")
 
-@task()
-def testdata():
-    """ Generate test data for the site. """
-    dj("testdata")
-
-@task()
-def celery():
-    """ Activate celery worker for testing. """
-    print("Activating celery worker for testing.")
-    return dev("celery --app=threepanel worker -l info")
-
-@task()
-def beat():
-    """ Run a celery beat for testing. """
-    print("Running a celery beat for testing.")
-    return dev("celery --app=threepanel beat")
-
-@task()
-def clear():
-    """ CLEAR DA CACHE """
-    print("Clearing everything out of the redis cache.")
-    dj("clear_cache")
+#
+#   You really only need this stuff if you're doing scheduling with Redis
+#   like a daily e-mail or something.
+#
+# YOUR_APP_NAME = butts_ahoy
+#@task()
+#def celery():
+#    """ Activate celery worker for testing. """
+#    print("Activating celery worker for testing.")
+#    return dev("celery --app={} worker -l info".format(YOUR_APP_NAME))
+#
+#@task()
+#def beat():
+#    """ Run a celery beat for testing. """
+#    print("Running a celery beat for testing.")
+#    return dev("celery --app={} beat".format(YOUR_APP_NAME))
 
 @task()
 def dump():
@@ -112,25 +103,25 @@ def kill_uwsgi():
         print("UWSGI Dead...")
     else:
         print("UWSGI not running!")
-
-@task
-def prod_restart():
-    """ Restart all of the services that make up ${project_slug} """
-    prod_stop()
-    prod_start()
-
 @task
 def prod_start():
-    """ Start all of the services that make up Threepanel """
+    """ Start all of the services in the production stack"""
     uwsgi()
     run("sudo service nginx start")
     run("sudo service redis-server start")
 
 @task
 def prod_stop():
-    """ Stop all of the services that make up Threepanel """
+    """ Stop all of the services in the production stack"""
     kill_uwsgi()
     print("Killing Nginx...")
     run("sudo service nginx stop")
     print("Killing Redis...")
     run("sudo service redis-server stop")
+
+@task
+def prod_restart():
+    """ Restart all of the services in the production stack """
+    prod_stop()
+    prod_start()
+

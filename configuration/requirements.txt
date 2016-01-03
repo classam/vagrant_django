@@ -2,7 +2,7 @@ invoke==0.10.1
 pep8==1.6.2
 pyflakes==0.8.1
 
-Django==1.8
+Django==1.9
 pytz==2015.4
 psycopg2==2.6
 
