@@ -3,8 +3,9 @@ import os
 from invoke import task, run
 from invoke.exceptions import Failure
 
+YOUR_APP_NAME = "${project_slug}"
 HOME_PATH = os.environ['HOME']
-DJANGO_PATH = os.path.join(HOME_PATH, 'vagrant_django', 'root')
+DJANGO_PATH = os.path.join(HOME_PATH, 'vagrant_django', YOUR_APP_NAME)
 CONF_PATH = os.path.join(HOME_PATH, 'vagrant_django', 'configuration')
 UWSGI_LOG_PATH = os.path.join(HOME_PATH, 'logs', 'uwsgi.log')
 UWSGI_SH_PATH = os.path.join(HOME_PATH, 'uwsgi.sh')
@@ -45,22 +46,17 @@ def migrate():
     """ Prep the database """
     return dj("migrate")
 
-#
-#   You really only need this stuff if you're doing scheduling with Redis
-#   like a daily e-mail or something.
-#
-# YOUR_APP_NAME = butts_ahoy
-#@task()
-#def celery():
-#    """ Activate celery worker for testing. """
-#    print("Activating celery worker for testing.")
-#    return dev("celery --app={} worker -l info".format(YOUR_APP_NAME))
-#
-#@task()
-#def beat():
-#    """ Run a celery beat for testing. """
-#    print("Running a celery beat for testing.")
-#    return dev("celery --app={} beat".format(YOUR_APP_NAME))
+@task()
+def celery():
+    """ Activate celery worker for testing scheduled tasks. """
+    print("Activating celery worker for testing.")
+    return dev("celery --app={} worker -l info".format(YOUR_APP_NAME))
+
+@task()
+def beat():
+    """ Run a celery beat for testing scheduled tasks. """
+    print("Running a celery beat for testing.")
+    return dev("celery --app={} beat".format(YOUR_APP_NAME))
 
 @task()
 def dump():
